@@ -1,0 +1,57 @@
+#!/bin/bash
+#chkconfig: 35 90 10
+#description: redis-monitor
+
+monitor_start() {
+ monitor_stopmonitor
+ /usr/local/bin/redis-server /etc/redis/redis7009.conf 
+ python /usr/local/redis-monitor/redis_monitor_daemon.py
+ python /usr/local/redis-monitor/redis_live_daemon.py
+}
+
+monitor_stop() {
+ monitor_stopmonitor
+ monitor_stoplive
+ /usr/local/bin/redis-cli -p 7009 SHUTDOWN 
+}
+monitor_stopmonitor(){
+ MPID=`ps axu|grep "redis_monitor_daemon.py"|grep -v grep|awk '{ print $2}'`
+ if [ "$MPID" != "" ];
+  then
+	 echo "kill monitor ( pid =" $MPID ")"
+	 kill -s KILL $MPID
+ fi
+}
+monitor_stoplive(){
+ MPID=`ps axu|grep "redis_live_daemon.py"|grep -v grep|awk '{ print $2}'`
+ if [ "$MPID" != "" ];
+  then
+	 echo "kill live ( pid =" $MPID ")"
+	 kill -s KILL $MPID
+ fi
+}
+monitor_remon(){
+ monitor_stopmonitor
+ python /usr/local/redis-monitor/redis_monitor_daemon.py
+}
+monitor_relive(){
+ monitor_stoplive
+ python /usr/local/redis-monitor/redis_live_daemon.py
+}
+monitor_restart(){
+	monitor_stop
+	monitor_start
+}
+monitor_usage() {
+  echo -e "Usage: $0 {start,stop,restart,relive,remon}"
+  exit 1
+}
+
+case "$1" in
+  start) monitor_start ;;
+  stop)  monitor_stop  ;;
+  restart) monitor_restart ;;
+  relive) monitor_relive ;;
+  remon) monitor_remon ;;
+  *)     monitor_usage ;;
+esac

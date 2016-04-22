@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="js/libs/bootstrap/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="js/libs/tooltip.css">
+</head>
+<body>  
+  
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">          
+            <a class="brand" href="./overview.html" style="margin-left:-20px">
+              <strong>OverView</strong>
+            </a>
+            <a class="brand" href="./index.html" style="background-color:red;">
+              <strong>Live</strong>
+            </a>
+             <a class="brand" href="./settings.html">
+              <strong>Settings</strong>
+            </a>
+            <form class="form-inline" style="float:right;margin-left:20px;margin-bottom:0px" onsubmit="return false;">
+      <div style="">
+        <div class="btn-group" style="display:block;float:left">
+          <button class="btn btn-small">realtime</button>
+          <button class="btn btn-small dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a href="#" class="time-period" data-type="realtime" data-time="0">realtime</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="time-period" id="time-period-defalut" data-type="minute" data-time="15">last 15 min</a></li>
+            <li><a href="#" class="time-period" data-type="minute" data-time="30">last 30 min</a></li>
+            <li><a href="#" class="time-period" data-type="minute" data-time="45">last 45 min</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="time-period" data-type="hour" data-time="1">last 1 hour</a></li>
+            <li><a href="#" class="time-period" data-type="hour" data-time="3">last 3 hours</a></li>
+            <li><a href="#" class="time-period" data-type="hour" data-time="12">last 12 hours</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="1">last 1 day</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="2">last 2 days</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="3">last 3 days</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="4">last 4 days</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="5">last 5 days</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="6">last 6 days</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="time-period" data-type="week" data-time="1">last 1 week</a></li>
+            <li><a href="#" class="time-period" data-type="week" data-time="2">last 2 weeks</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="time-period" data-type="month" data-time="1">last 1 month</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="time-period" data-type="custom" data-time="0">custom</a></li>
+          </ul>
+        </div>
+        <div class="date-control hide" style="top:2px;margin-left:5px">
+          <input type="text" style="width:150px" class="input-small" placeholder="from" name="from">
+          <input type="text" style="width:150px" class="input-small" placeholder="to" name="to">
+          <button type="button" class="btn go" style="top:0px" >go</button>
+        </div>                   
+      </div>
+    </form> 
+           <span  style="display:inline-block;margin-left:20px;padding-top:10px;float:right;">
+            <input id="cb_mem" value="memory" type="checkbox" checked="checked">
+            <label for="cb_mem" style="color:white;display:inline-block;">mem</label>
+             <input id="cb_cmd" value="commands" type="checkbox" checked="checked">
+            <label for="cb_cmd" style="color:white;display:inline-block;">cmd</label>
+             <input id="cb_hit" value="hitrate" type="checkbox" checked="checked">
+            <label for="cb_hit" style="color:white;display:inline-block;">hit</label>
+             <input id="cb_keys" value="keyspace" type="checkbox" checked="checked">
+            <label for="cb_keys" style="color:white;display:inline-block;">keys</label>
+            <input id="cb_expire" value="kick" type="checkbox" checked="checked">
+            <label for="cb_expire" style="color:white;display:inline-block;">expire</label>
+            <input id="cb_slowlog" value="slowlog" type="checkbox">
+            <label for="cb_slowlog" style="color:white;display:inline-block;">slowlog</label>
+            </span>
+            <select id="server-list" class="nav pull-right span2 server-list" style="width:220px">
+              <option>redis server..</option>                   
+            </select>
+        </div>
+    </div>
+  </div>
+
+  <!-- Container -->
+  <div class="container-fluid"> 
+    
+    <!-- Info Widget -->
+    <div class="row-fluid">        
+      <div id="info-widget-placeholder" class="span12"></div>
+    </div>
+    <hr>    
+    <div class="row-fluid" id="commands-widget-placeholder"></div>    
+    <hr>
+     <div class="row-fluid" id="status-widget-placeholder"></div>    
+    <hr> 
+    <div class="row-fluid" id="slowlog-placeholder"></div>
+	<hr>
+  </div>
+  <!-- End Container -->
+
+
+  <!-- javascript ==================================================-->  
+
+<script type="text/javascript" src="js/libs/jsapi.js"></script>
+ <script type="text/javascript" src="js/libs/google.js"></script>
+ <script type="text/javascript" src="js/libs/corechart.js"></script>
+  <script type="text/javascript" src="js/libs/jquery/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="js/libs/less/less-1.3.0.min.js"></script>  
+
+  <script type="text/javascript" src="js/libs/bootstrap/js/bootstrap-button.js"></script>  
+  <script type="text/javascript" src="js/libs/bootstrap/js/bootstrap-tooltip.js"></script>
+  <script type="text/javascript" src="js/libs/bootstrap/js/bootstrap-popover.js"></script>
+  <script type="text/javascript" src="js/libs/bootstrap/js/bootstrap-dropdown.js"></script>
+
+  <script type="text/javascript" src="js/libs/underscore/underscore-min.js"></script>
+  <script type="text/javascript" src="js/libs/backbone/backbone-min.js"></script>  
+  <script type="text/javascript" src="js/libs/handlebars/handlebars-1.0.0.beta.6.js"></script>
+  
+  <script type="text/javascript" src="js/views/base-widget-view.js"></script>
+
+  <script type="text/javascript" src="js/models/serverlist-model.js"></script>   
+  <script type="text/javascript" src="js/views/serverlist-view.js"></script>
+  
+  <script type="text/javascript" src="js/models/info-widget-model.js"></script>
+  <script type="text/javascript" src="js/views/info-widget-view.js"></script>
+
+  <script type="text/javascript" src="js/models/commands-widget-model.js"></script>
+  <script type="text/javascript" src="js/views/commands-widget-view.js"></script>
+  
+  <script type="text/javascript" src="js/models/status-widget-model.js"></script>
+  <script type="text/javascript" src="js/views/status-widget-view.js"></script>
+
+  <script type="text/javascript" src="js/app.js"></script>
+  
+  <script type="text/javascript">
+  $(document).ready(function(el)
+		  {
+  			 App.init();
+  			 $("input[type=checkbox]").each(function(){
+  				 $(this).click(function(){
+  					var val=$(this).attr("checked");
+  					val2=$(this).val();
+  					var el=$("#"+val2+"-widget-chart").parent();
+  					if(val2=='slowlog'){
+  						if(val=="checked"){
+	  						showlog();
+	  					}
+	  					else{
+	  						displaylog();
+	  					}
+  					}else{
+	  					if(val=="checked"){
+	  						el.css({display:"block"});;	
+	  					}
+	  					else{
+	  						el.css({display:"none"});
+	  					}
+	  				}
+  				 })
+  			 });
+  			 
+  			 function showlog(){
+	  			 $.ajax({
+					url : "api/slowlog?server="+$('#server-list').val(),
+					dataType : "json",
+					cache:false,
+					success : function(data) {
+						var table= createSlowlog(data.data);
+						$('#slowlog-placeholder').html(table);
+					}
+				});
+  			 }
+  			 function displaylog(){
+  			 	$('#slowlog-placeholder').html('');
+  			 }
+  			 
+  			 function createSlowlog(data){
+				var html=[];
+				html.push('<div class="span12" style="margin-left:0px">\
+				<div class="row-fluid">\
+				<div class="span4"><h3>Slowlog</h3></div>\
+				<table class="dataintable" style="min-width:1024px;margin-left:100px">\
+				<tbody><tr>\
+				<th>time</th>\
+				<th>id</th>\
+				<th>escaple/Ms</th>\
+				<th>command</th>\
+				</tr>');
+
+				$.each(data,function(index,item){
+					html.push('<tr><td>'+item.time+'</td>\
+					<td>'+item.id+'</td>\
+					<td>'+item.escapeMs+'</td>\
+					<td>'+item.cmd+'</td></tr>');
+				});
+				html.push('</tbody></table></div></div>');
+				return html.join('');
+  			 }
+		  })
+  </script>
+
+  <!-- Info widget template
+  ================================================== -->
+  <script type="text/x-handlebars-template" id="info-widget-template">
+    <div class="row-fluid">
+      <div class="span12">    
+        <table class="table">
+          <tr>
+			<td>
+              <div class="info-box" id="service-status">
+                <center>
+                  <p>STATUS</p>
+                  <p class="well-value">{{role}}</p>
+                </center>
+              </div>
+            </td>
+ 	<!--		<td>
+              <div class="info-box" id="misc-info">
+                <center>
+                  <p>MISC</p>
+                  <p class="well-value">...</p>
+                </center>
+              </div>
+            </td>-->
+            <td>
+              <div class="info-box">
+                <center>
+                  <p>USED MEMORY</p>
+                  <p class="well-value">{{used_memory_human}}</p>
+                </center>
+              </div>
+            </td>
+            <td>
+              <div class="info-box" id="total-keys">
+                <center>         
+                  <p>TOTAL KEYS</p>
+                  <p class="well-value">{{total_keys}}</p>
+                </center>       
+              </div>
+            </td>
+            <td>
+              <div class="info-box">
+                <center>
+                  <p>CLIENTS</p>
+                  <p class="well-value">{{connected_clients}}</p>
+                </center>
+              </div>
+            </td>
+            <td>
+              <div class="info-box">
+                <center>
+                  <p>COMMANDS PROCESSED</p>
+                  <p class="well-value">{{total_commands_processed_human}}</p>
+                </center>
+              </div>
+            </td>
+            <td>
+              <div class="info-box">
+                <center>
+                  <p>UPTIME</p>
+                  <p class="well-value">{{uptime}}</p>
+                </center>
+              </div>
+            </td>
+     
+           
+          </tr>
+        </table>  
+      </div>  
+    </div>   
+  </script>
+  
+  <!-- keys tooltip template 
+  ================================================== -->
+  <script type="text/x-handlebars-template" id="popover-template">
+    <ul>
+    {{#each this}}
+      <li>{{name}} : {{keys}} keys, {{expires}} expires</li>
+    {{/each}}
+     </ul>
+  </script>
+
+  <!-- info tooltip template 
+  ================================================== -->
+   <script type="text/x-handlebars-template" id="info-template">
+     <ul>
+      {{#hash this}}
+        <li>{{key}} : {{value}}</li>
+      {{/hash}}
+     </ul>
+   </script>
+
+  <!-- Memory widget template 
+  ================================================== -->
+  <script type="text/x-handlebars-template" id="memory-widget-template">
+    <div class="span12">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>Memory Consumption</h3>              
+        </div>
+      
+      </div>
+      <div id="memory-widget-chart"></div>         
+    </div>
+  </script>
+
+  <!-- Commands widget template 
+  ================================================== -->
+  <script type="text/x-handlebars-template" id="commands-widget-template">
+	<div class="span12">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>Memory Consumption</h3>              
+        </div>
+      
+      </div>
+      <div id="memory-widget-chart"></div>         
+    </div>
+    <div class="span12"  style="margin-left:0px">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>Commands Processed</h3>              
+        </div>
+      
+      </div>
+      <div id="commands-widget-chart"></div>         
+    </div>
+	<div class="span12" style="margin-left:0px">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>HitRate</h3>              
+        </div>
+      
+      </div>
+      <div id="hitrate-widget-chart"></div>         
+    </div>
+	<div class="span12" style="margin-left:0px">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>KeySpace</h3>              
+        </div>
+      
+      </div>
+      <div id="keyspace-widget-chart"></div>         
+    </div>
+	<div class="span12" style="margin-left:0px">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>Expired&Evicted</h3>              
+        </div>
+      
+      </div>
+      <div id="kick-widget-chart"></div>         
+    </div>
+
+  </script>
+
+ <!-- ================================================== -->
+  <script type="text/x-handlebars-template" id="status-widget-template">
+    <div class="span12" style="margin-left:0px">
+      <div class="row-fluid">              
+        <div class="span4">
+          <h3>Replication</h3>              
+        </div>
+<table class="dataintable" style="min-width:1024px;margin-left:100px">
+<tbody><tr>
+<th>time</th>
+<th>role</th>
+<th>master</th>
+<th>slaves</th>
+<th>link_status</th>
+<th>process</th>
+</tr>
+ {{#each this}}
+<tr>
+<td>{{time}}</td>
+<td>{{role}}</td>
+<td>{{master_host_port}}</td>
+<td>{{slaves}}</td>
+<td>{{master_link_status}}</td>
+<td>{{master_sync_in_progress}}</td>
+</tr>
+  {{/each}}
+</tbody></table>
+  </div>
+ </div> 
+  </script>
+
+  <!-- Top Commands widget template 
+  ================================================== -->
+  <script type="text/x-handlebars-template" id="top-commands-widget-template">
+    <div class="row-fluid">              
+      <div class="span6">
+        <h3>Top Commands</h3>                  
+      </div>      
+      <div class="" style="float:right">
+        {{> date-dropdown}}                                
+      </div>      
+    </div>
+    <div id="top-commands-widget-chart"></div>    
+  </script>
+
+  <!-- Top Keys widget template 
+  ================================================== -->
+  <script type="text/x-handlebars-template" id="top-keys-widget-template">
+    <div class="row-fluid">              
+      <div class="span6">
+        <h3>Top Keys</h3>                  
+      </div>      
+      <div class="" style="float:right">
+        {{> date-dropdown}}                                
+      </div>      
+    </div>
+    <div id="top-keys-widget-chart"></div>    
+  </script> 
+</body>
+</html>

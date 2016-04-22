@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" type="text/css"
+	href="js/libs/bootstrap/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="js/libs/tooltip.css">
+<script type="text/javascript" src="js/libs/jquery/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="brand" href="./overview.html" style="margin-left: -20px">
+					<strong>OverView</strong> </a> <a class="brand" href="./index.html">
+					<strong>Live</strong> </a> <a class="brand" href="./settings.html"
+					style="background-color: red;"> <strong>Settings</strong> </a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Container -->
+	<div class="container-fluid">
+	 Redis 实例列表:<br/>
+	<textarea  id="redis-instances-list" rows="10" cols="30" style="margin: 0px; width: 613px; height: 463px;"></textarea>
+	<br />
+	<br />
+	短信报警：
+	<br />
+	<input type="checkbox" id="sms-master" /> 主从切换报警
+	<br />
+	<input type="checkbox" id="sms-master-stat" /> 主从状态变化报警
+	<br />
+	<br/>
+	<input type="button" id="save-button" value="修改" /> <span id="save-status-msg" style="color:red;"></span>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function(el) {
+			$.ajax({
+				url : "api/settings?v="+(new Date()).valueOf(),
+				dataType : "json",
+				success : function(data) {
+					$('#redis-instances-list').val(data.servers);
+					if(data.sms1)
+						$('#sms-master').attr("checked","checked")
+					if(data.sms2)
+						$('#sms-master-stat').attr("checked","checked")
+						
+				  ondataLoaded();		
+				}
+			});
+		});
+		function ondataLoaded(){
+		$('#save-button').css('border','2px outset buttonface')
+		.click(function(){
+			
+			var d={"servers":$('#redis-instances-list').val()
+					,"sms1":$('#sms-master').attr("checked")=='checked'?1:0
+					,"sms2":$('#sms-master-stat').attr("checked")=='checked'?1:0}
+			
+			$.ajax({
+				url : "api/settings",
+				dataType : "json",
+				type:"POST",
+				data:d,
+				success:function(data){
+					if(data.status==200)
+						$('#save-status-msg').html('*保存成功');
+					else
+						$('#save-status-msg').html('*保存出错:'+data.error);
+					setTimeout(function(){$('#save-status-msg').html('');},1000)
+				}
+			})
+		})
+	}
+	</script>
+</body>
+</html>
