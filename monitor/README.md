@@ -14,7 +14,7 @@ base RedisLive,monitor multiple redis-server in product enviroment:
     python redis_live_daemon.py
     python redis_monitor_daemon.py
   
-### ÑÝÊ¾µØÖ·
+### ç¤ºä¾‹
 [Redis-monitor](http://10.10.209.104:8888/index.html)
 ### overview
 ![Redis Live](https://raw.github.com/LittlePeng/redis-monitor/master/design/redis-live.png)
